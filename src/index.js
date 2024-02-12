@@ -12,7 +12,7 @@ app.post('/users', (req, res) => {
     const user = new User(req.body)
 
     user.save().then((user) => {
-        console.log("User saved successfully:", user);
+        console.log("User saved successfully:");
         res.send(user);
     }).catch((err) => {
         if (err.code === 11000) {
