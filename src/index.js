@@ -8,49 +8,55 @@ const port = process.env.PORT || 3000
 
 app.use(express.json())
 
-app.post('/users', (req, res) => {
+app.post('/users', async (req, res) => {
     const user = new User(req.body)
 
-    user.save().then((user) => {
-        console.log("User saved successfully:");
-        res.send(user);
-    }).catch((err) => {
-        if (err.code === 11000) {
-            console.log("Username is already in use.");
+    try {
+        await user.save();
+        res.status(201).send(user);
+    } catch (error) {
+        if (error.code === 11000) {
             res.status(400).send("Username is already in use.");
         } else {
-            console.log(err);
-            res.status(500).send("An error occurred while saving the user.", err);
+            res.status(500).send(error);
         }
-    })
+    }
 })
 
-app.get('/users', (req, res) => {
-    User.find({}).then((users) => {
+app.get('/users', async (req, res) => {
+
+    try {
+        const users = await User.find({})
         res.send(users);
-    }).catch((e) => {
-        res.status(500).send(e)
-    })
+    } catch (error) {
+        res.status(500).send(error)
+    }
 })
 
 
-app.get('/users/:username', (req, res) => {
-
-
-    // console.log(req.params)
-
+app.get('/users/:username', async (req, res) => {
     const _username = req.params.username
 
-
-    User.findOne({ username: _username }).then((user) => {
+    try {
+        const user = await User.findOne({ username: _username })
         if (!user) {
             return res.status(404).send()
         }
 
         res.send(user)
-    }).catch((e) => {
+    } catch (error) {
         res.status(500).send()
-    })
+    }
+
+    // User.findOne({ username: _username }).then((user) => {
+    //     if (!user) {
+    //         return res.status(404).send()
+    //     }
+
+    //     res.send(user)
+    // }).catch((e) => {
+    //     res.status(500).send()
+    // })
 })
 
 
