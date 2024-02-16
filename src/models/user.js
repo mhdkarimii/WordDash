@@ -3,11 +3,22 @@ const validator = require('validator')
 const bcrypt = require('bcryptjs')
 
 const userSchema = new mongoose.Schema({
-    name: {
+    username: {
         type: String,
         required: true,
         unique: true,
         trim: true
+    },
+    email: {
+        type: String,
+        required: true,
+        trim: true,
+        unique: true,
+        validate: {
+            validator: function (value) {
+                return validator.isEmail(value)
+            }
+        }
     },
     password: {
         type: String,
@@ -25,19 +36,27 @@ const userSchema = new mongoose.Schema({
             },
             message: 'Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, and one number.'
         }
-    },
-    email: {
-        type: String,
-        required: true,
-        trim: true,
-        validate: {
-            validator: function (value) {
-                return validator.isEmail(value)
-            }
-        }
     }
 })
 
+userSchema.statics.findByCredentials = async (email, password) => {
+    const user = await User.findOne({ email: email })
+
+    if (!user) {
+        throw new Error('Unable to login')
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password)
+
+    if (!isMatch) {
+        throw new Error('Unable to login')
+    }
+
+    return user
+}
+
+
+// Hash the plain text password before saving
 userSchema.pre('save', async function (next) {
     const user = this
 

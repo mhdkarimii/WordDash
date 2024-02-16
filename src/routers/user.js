@@ -12,10 +12,20 @@ router.post('/users', async (req, res) => {
         res.status(201).send(user);
     } catch (error) {
         if (error.code === 11000) {
-            res.status(400).send("Username is already in use.");
+            res.status(400).send("Username or Email is already in use.");
         } else {
             res.status(500).send(error);
         }
+    }
+})
+
+
+router.post('/users/login', async (req, res) => {
+    try {
+        const user = await User.findByCredentials(req.body.email, req.body.password)
+        res.send(user)
+    } catch (error) {
+        res.status(400).send()
     }
 })
 
