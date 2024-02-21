@@ -9,7 +9,8 @@ router.post('/users', async (req, res) => {
 
     try {
         await user.save();
-        res.status(201).send(user);
+        const token = await user.generateAuthToken()
+        res.status(201).send({ user, token});
     } catch (error) {
         if (error.code === 11000) {
             res.status(400).send("Username or Email is already in use.");
@@ -18,6 +19,8 @@ router.post('/users', async (req, res) => {
         }
     }
 })
+
+ 
 
 
 router.post('/users/login', async (req, res) => {
