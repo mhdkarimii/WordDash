@@ -43,7 +43,11 @@ const userSchema = new mongoose.Schema({
             type: String,
             required: true,
         }
-    }]
+    }],
+    avatar: {
+        type: Buffer,
+        // required: true (SOON)
+    }
 })
 
 userSchema.methods.toJSON = function () {
