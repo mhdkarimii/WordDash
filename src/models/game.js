@@ -1,22 +1,32 @@
-const mongoose = require('mongoose')
-
-const gameSchema = new mongoose.Schema({
-    settings: {
-
-    },
-    players: {
-
-    },
-    logic: {
-
-    }
-}, {
-    timestamps: true
-})
+    const mongoose = require('mongoose')
+    const Schema  = mongoose.Schema;
 
 
+    const User = require('./user')
+    const Settings = require('./settings')
+    const Logic = require('./logic')
 
-const Game = new mongoose.model('Game', gameSchema)
+
+    const gameSchema = new mongoose.Schema({
+        settings: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Settings'
+        }],
+        players: [{
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        }],
+        logic: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Logic'
+        }],
+    }, {
+        timestamps: true
+    })
 
 
-module.exports = Game
+
+    const Game = new mongoose.model('Game', gameSchema)
+
+
+    module.exports = Game
